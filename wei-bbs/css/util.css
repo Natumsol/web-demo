@@ -1,0 +1,15 @@
+.util-pull-left{
+    float: left;
+}
+.util-pull-right{
+    float: right;
+}
+.util-clearfix:after{
+    content: "";
+    display: block;
+    clear: both;
+    visibility: hidden;
+}
+.util-text-center{
+    text-align: center;
+}
