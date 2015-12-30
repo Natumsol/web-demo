@@ -31,7 +31,7 @@ function parse(target) {
         target = target.replace(/^{{|}}$/g, "");
         var funcName = target.match(/(\w+)\(/)[1];
         var arguments = target.replace(/^\w+\(|\)$/g, "").split(",").map(function (value) {
-            return !!parseInt(value) ? parseInt(value) : null ;
+            return !!parseInt(value) ? parseInt(value) : null;
         });
         return Tools[funcName].apply(Tools, arguments);
     } else {
