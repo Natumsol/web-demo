@@ -20,9 +20,9 @@
 #### {{objectId()}}
 返回一个随机的objectID
 #### {{floating([min],[max],[fixed]}}
-返回一个大小在min #### max之间的随机浮点数，fixed用于指定小数的位数。
+返回一个大小在min - max之间的随机浮点数，fixed用于指定小数的位数。
 #### {{integer([min], [max])}}
-返回一个大小在min #### max之间的随机整数。
+返回一个大小在min - max之间的随机整数。
 #### {{phone())}}
 返回一个随机手机号码（中国的）。
 #### {{text(counter,[type])}}
