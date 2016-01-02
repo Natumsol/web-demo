@@ -70,7 +70,7 @@
     <header>
         <li id="generateJSON">Generate JSON</li>
         <li id="JSONFormat">Pertty</li>
-        <li class="pull-right">Help</li>
+        <li id="help" class="pull-right">Help</li>
         <li class="pull-right">About</li>
     </header>
     <pre id="src" class="editor">
@@ -114,6 +114,9 @@
         dst.setValue(JSON.stringify(JSON.parse(dst.getValue()), null, "\t"));
         dst.clearSelection();
     });
+    $("help").addEventListener("click", function(){
+        window.location.href = "https://github.com/Natumsol/web-demo#1json-generator";
+    })
     </script>
 
 </body>
