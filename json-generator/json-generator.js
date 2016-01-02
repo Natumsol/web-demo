@@ -1,21 +1,21 @@
-var testCase = {
-    data: "{{date()}}",
-    range: "range(20)",
-    guid: "{{guid()}}",
-    id: "{{objectId()}}",
-    price: "{{floating(10,46)}}",
-    inter: "{{integer(100)}}",
-    phone: "{{phone()}}",
-    text: "{{text(100)}}",
-    country: "{{country()}}",
-    city: "{{city()}}",
-    string: "string"
-}
+// var testCase = {
+//     data: "{{date()}}",
+//     range: "range(20)",
+//     guid: "{{guid()}}",
+//     id: "{{objectId()}}",
+//     price: "{{floating(10,46)}}",
+//     inter: "{{integer(100)}}",
+//     phone: "{{phone()}}",
+//     text: "{{text(100)}}",
+//     country: "{{country()}}",
+//     city: "{{city()}}",
+//     string: "string"
+// }
 
-console.log(generateJSON(testCase));
+// console.log(generateJSON(testCase));
 
 function generateJSON(obj) {
-    var result = [];
+    var result = {};
     for (var key in obj) {
         if (obj.hasOwnProperty(key)) {
             result[key] = parse(obj[key]);
@@ -44,7 +44,7 @@ function getRandom(min, max) {
         max = min;
         min = 0;
     }
-    return min + Math.random() * max;
+    return min + Math.random() * (max - min);
 }
 
 var ObjectId = (function () {
@@ -7185,7 +7185,8 @@ var Tools = {
             length: 8
         }).map(function (value, index, array) {
             return Math.floor(getRandom(10));
-        }).join("");
+        }).join("")
+        return result;
     },
 
     objectId: function () {
