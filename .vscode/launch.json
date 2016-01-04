@@ -5,7 +5,7 @@
 			"name": "Launch",
 			"type": "node",
 			"request": "launch",
-			"program": "./node-demo/node-server/server.js",
+			"program": "./node-demo/node-server/server-v2.js",
 			"stopOnEntry": false,
 			"args": ["./node-demo/node-server/config.json"],
 			"cwd": ".",

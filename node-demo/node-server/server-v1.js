@@ -34,32 +34,38 @@ function main(argv) {
 
     http.createServer(function (req, res) {
         var urlInfo = parseURL(root, req.url);
-        combineFiles(urlInfo.pathnames, function (err, data) {
-            if (err) {
-                res.writeHeader(500, { "Content-Type": "text/html" }),
-                res.end("<h1>Error</h1>")
-            } else {
-                res.writeHeader(200, { "Content-Type": urlInfo.mime });
-                res.end(data.toString());
-            }
-        })
+        if(urlInfo) {
+            combineFiles(urlInfo.pathnames, function (err, data) {
+                if (err) {
+                    res.writeHeader(500, { "Content-Type": "text/html" }),
+                    res.end("<h1>Error</h1>")
+                } else {
+                    res.writeHeader(200, { "Content-Type": urlInfo.mime });
+                    res.end(data.toString());
+                }
+            })
+        } else {
+             res.writeHeader(404, { "Content-Type": "text/html" }),
+             res.end("<h1>404 Not Found</h1>")
+        }
     }).listen(port);
 }
 
 function parseURL(root, url) {
-    var base, pathnames, parts;
-    if (url.indexOf("??") === -1) {
-        url.replace("/", "/??");
-    }
-    parts = unescape(url).split("??");
-    base = parts[0];
-    pathnames = parts[1].split(",").map(function (value, index, array) {
-        return path.join(root, base, value);
-    });
-    console.log(pathnames)
-    return {
-        mime: MIME[path.extname(pathnames[0])] || "text/plain",
-        pathnames: pathnames
+    if(url.indexOf("??") !== -1) {
+        var base, pathnames, parts;
+        parts = unescape(url).split("??");
+        base = parts[0];
+        pathnames = parts[1].split(",").map(function (value, index, array) {
+            return path.join(root, base, value);
+        });
+        console.log(pathnames)
+        return {
+            mime: MIME[path.extname(pathnames[0])] || "text/plain",
+            pathnames: pathnames
+        }
+    } else {
+        return null;
     }
 }
 
