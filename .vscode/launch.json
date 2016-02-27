@@ -5,9 +5,9 @@
 			"name": "Launch",
 			"type": "node",
 			"request": "launch",
-			"program": "./node-demo/node-file/travelDir.js",
+			"program": "./node-demo/node-server/server-v2.js",
 			"stopOnEntry": false,
-			"args": [],
+			"args": ["./node-demo/node-server/config.json"],
 			"cwd": ".",
 			"runtimeExecutable": null,
 			"runtimeArgs": [
