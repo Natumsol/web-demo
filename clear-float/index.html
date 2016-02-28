@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>清除浮动</title>
+    <style>
+        .container {
+            border: 1px solid lightseagreen;
+            padding: 5px;
+            margin: 10px;
+        }
+        
+        .container img {
+            float: left;
+        }
+        .clearfix::after{
+            clear: both;
+            display: block;
+            content: "";
+            height: 0;
+        }
+        .clearfix{
+            zoom:1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <img src="avatar.jpg" width="200" alt=""> 方法1
+        <div style="clear:both"></div>
+    </div>
+    <div class="container clearfix">
+        <img src="avatar.jpg" width="200" alt=""> 方法1
+    </div>
+
+</body>
+
+</html>

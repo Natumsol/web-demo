@@ -1,0 +1,8 @@
+.container{
+    border: 1px  solid lightseagreen;
+    padding: 5px;
+    margin: 10px;
+}
+.container img{
+    float: left;
+}
