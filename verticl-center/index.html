@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>垂直居中</title>
+    <style>
+        .container {
+            border: 1px solid deepskyblue;
+            position: relative;
+            height: 500px;
+        }
+        
+        .absolute_center {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            overflow: auto;
+            resize: both;
+            border: 1px solid orangered;
+        }
+        
+        .negative_margin-top {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            left: 0;
+            right: 0;
+            top: 50%;
+            margin: auto;
+            margin-top: -100px;
+            border: 1px solid orangered;
+            resize: both;
+            overflow: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="absolute_center">
+            青青子衿，悠悠我心。
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="negative_margin-top">
+            青青子衿，悠悠我心。
+        </div>
+    </div>
+    <div class="container"></div>
+    <div class="container"></div>
+    <div class="container"></div>
+
+</body>
+
+</html>
