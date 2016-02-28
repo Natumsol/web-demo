@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Editor</title>
+    <style type="text/css" media="screen">
+        html,
+        body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .editor {
+            float: left;
+            width: 50%
+        }
+        
+        #src {
+            margin: 0;
+            position: absolute;
+            top: 40px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            font-size: 14px;
+            border-right: 1px solid #fff;
+        }
+        
+        #dst {
+            margin: 0;
+            position: absolute;
+            top: 40px;
+            bottom: 0;
+            left: 50%;
+            right: 0;
+            font-size: 14px;
+        }
+        
+        header {
+            width: 100%;
+            display: block;
+            /*height: 60px;*/
+            background: #000;
+            color:#fff;
+        }
+        header li{
+            display: inline-block;
+            line-height: 30px;
+            cursor: pointer;
+            padding:5px 15px;
+            height: 30px;
+            margin: auto 0;
+        }
+        header li:hover{
+            opacity: 0.8;
+        }
+        .pull-right{
+            float: right;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <li id="generateJSON">Generate JSON</li>
+        <li id="JSONFormat">Pertty</li>
+        <li id="help" class="pull-right">Help</li>
+        <li class="pull-right">About</li>
+    </header>
+    <pre id="src" class="editor">
+{
+    "data": "{{date()}}",
+    "range": "{{range(20)}}",
+    "guid": "{{guid()}}",
+    "id": "{{objectId()}}",
+    "price": "{{floating(10,46)}}",
+    "inter": "{{integer(100)}}",
+    "phone": "{{phone()}}",
+    "text": "{{text(100)}}",
+    "country": "{{country()}}",
+    "city": "{{city()}}",
+    "string": "string"
+}
+    </pre>
+    <pre id="dst" class="editor"></pre>
+    <script src="./lib/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="json-generator.js"></script>
+    <script>
+    var src = ace.edit("src");
+    src.setTheme("ace/theme/twilight");
+    src.session.setMode("ace/mode/json");
+    
+    var dst = ace.edit("dst");
+    dst.setTheme("ace/theme/twilight");
+    dst.session.setMode("ace/mode/json");
+    function $(id, context){
+        context = context || document;
+        return context.getElementById(id);
+    }
+    $("generateJSON").addEventListener("click", function(){
+        var result = generateJSON(JSON.parse(src.getValue()));
+        console.log(result);
+        dst.setValue(JSON.stringify(result,null, "\t"));
+    }, false);
+    $("JSONFormat").addEventListener("click", function(){
+        src.setValue(JSON.stringify(JSON.parse(src.getValue()), null, "\t"));
+        src.clearSelection();
+        dst.setValue(JSON.stringify(JSON.parse(dst.getValue()), null, "\t"));
+        dst.clearSelection();
+    });
+    $("help").addEventListener("click", function(){
+        window.location.href = "https://github.com/Natumsol/web-demo#1json-generator";
+    })
+    </script>
+
+</body>
+
+</html>

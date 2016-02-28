@@ -1,0 +1,32 @@
+#contact-panel {
+    text-align: center;
+    margin-top: 1em;
+    .fa {
+        font-size: 40px;
+        margin: 0 5px;
+    }
+}
+
+.social-share-text {
+    font-weight: bold;
+    text-indent: 0;
+}
+
+#footer-follow {
+    margin: 0 auto;
+    width: 220px;
+}
+
+.footer-follow-element {
+    width: 32px;
+    height: 32px;
+    background-image: url('../../blog/img/social.png');
+    background-size: 160px 60px;
+    transition: 1s;
+    display: inline-block;
+    border-bottom: none;
+    &:hover {
+        background-color: #DB6968;
+        border-radius: 50%;
+    }
+}
