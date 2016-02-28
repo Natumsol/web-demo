@@ -14,14 +14,22 @@
         .container img {
             float: left;
         }
-        .clearfix::after{
+        
+        .clearfix::after {
             clear: both;
             display: block;
             content: "";
             height: 0;
         }
-        .clearfix{
-            zoom:1;
+        
+        .clearfix {
+            zoom: 1;
+        }
+        .toggleBFC {
+            overflow: hidden;
+        }
+        .pull-left{
+            float: left;
         }
     </style>
 </head>
@@ -29,13 +37,18 @@
 <body>
 
     <div class="container">
-        <img src="avatar.jpg" width="200" alt=""> 方法1
+        <img src="avatar.jpg" width="200" alt=""> 方法1： 添加一个子元素，并添加css属性<code>clear:both</code>
         <div style="clear:both"></div>
     </div>
     <div class="container clearfix">
-        <img src="avatar.jpg" width="200" alt=""> 方法1
+        <img src="avatar.jpg" width="200" alt=""> 方法2： 利用css伪类元素<code>::after</code>
     </div>
-
+    <div class="container toggleBFC">
+        <img src="avatar.jpg" width="200" alt=""> 方法3： 出发父元素的BFC
+    </div>
+    <div class="container pull-left">
+        <img src="avatar.jpg" width="200" alt=""> 方法4： 给父元素添加浮动属性（同样是触发BFC）建议在容器原本就浮动或者容器使用了绝对定位时使用该方法。不要在主要布局中使用
+    </div>
 </body>
 
 </html>
