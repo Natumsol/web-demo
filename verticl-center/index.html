@@ -9,6 +9,7 @@
             border: 1px solid deepskyblue;
             position: relative;
             height: 500px;
+            margin: 10px;
         }
         
         .absolute_center {
@@ -38,6 +39,41 @@
             resize: both;
             overflow: auto;
         }
+        
+        .table-container {
+            display: table;
+        }
+        
+        .table-center {
+            display: table-cell;
+            border: 1px solid orangered;
+            vertical-align: middle;
+            height: 200px;
+            width: 200px;
+        }
+        
+        .inline-conainer::after {
+            content: '';
+            display: inline-block;
+            vertical-align: middle;
+            height: 100%;
+        }
+        
+        .inline-center {
+            display: inline-block;
+            vertical-align: middle;
+            border: 1px solid orangered;
+            resize: both;
+            overflow: auto;
+        }
+        .flex{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .flex div{
+            border: 1px solid orangered;
+        }
     </style>
 </head>
 
@@ -53,9 +89,21 @@
             青青子衿，悠悠我心。
         </div>
     </div>
-    <div class="container"></div>
-    <div class="container"></div>
-    <div class="container"></div>
+    <div class="container table-container">
+        <div class="table-center">
+            青青子衿，悠悠我心。
+        </div>
+    </div>
+    <div class="container inline-conainer">
+        <div class="inline-center">
+            青青子衿，悠悠我心。
+        </div>
+    </div>
+    <div class="container flex">
+        <div>
+            青青子衿，悠悠我心。
+        </div>
+    </div>
 
 </body>
 
