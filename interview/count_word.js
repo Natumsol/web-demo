@@ -9,7 +9,7 @@ function statistics(articles, keywords) {
         frequency[keywords[i]] = 0;
     }
     var word = [];
-    for (var i = 0, j = 0; i < articles.length; i++) {
+    for (var i = 0; i < articles.length; i++) {
         if (alphabet.indexOf(articles[i]) != -1) {
             if (i == 0 || alphabet.indexOf(articles[i - 1]) == -1) {
                 word.length = 0;
