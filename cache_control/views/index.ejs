@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/css/<%=manifest["style.css"]%>'/>
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+    <script src="/js/<%=manifest['require.js']%>"></script>
+    <script>requirejs(<%- JSON.stringify(config)%>);</script>
+    <script>
+    require(["/js/<%=manifest["index.js"]%>"], function (index) {index.init()})
+    </script>
+  </body>
+</html>

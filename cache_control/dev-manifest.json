@@ -1,0 +1,8 @@
+{
+	"style.css": "style.css",
+	"index.js": "index.js",
+	"lib/jQuery/jQuery.js": "lib/jQuery/jQuery.js",
+	"require.js": "require.js",
+	"require_config.js": "require_config.js",
+	"tools.js": "tools.js"
+}
