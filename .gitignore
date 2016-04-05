@@ -1,3 +1,4 @@
 /.vscode
 /cv/node_modules
 /node_modules
+/**/node_modules
