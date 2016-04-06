@@ -1,4 +1,4 @@
-# useage
+# usage
 1. clone this repos and execute `npm install`.
 2. execute `gulp`.
 3. double click `start.bat`.
