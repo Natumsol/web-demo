@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "async": "^2.0.0-rc.3",
+    "cheerio": "^0.20.0"
+  },
+  "name": "zhihu",
+  "version": "1.0.0",
+  "description": "get one's all content in zhihu.com",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:natumsol/web-demo/zhihu"
+  },
+  "keywords": [
+    "zhihu",
+    "api"
+  ],
+  "author": "Natumsol",
+  "license": "ISC"
+}

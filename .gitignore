@@ -3,4 +3,5 @@
 /node_modules
 /**/node_modules
 /cache_control/statics
-
+/zhihu/config/**
+/zhihu/test.js
