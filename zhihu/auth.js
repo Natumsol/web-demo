@@ -7,6 +7,7 @@ var cheerio = require('cheerio');
 var async = require("async");
 var querystring = require("querystring");
 var config = require("./config/config");
+var fs = require("fs");
 var url = {
     home: "www.zhihu.com",
     login: "/login/email",
@@ -108,7 +109,7 @@ var getActivities = function(err, username) {
         }
     }
     var postData = querystring.stringify({
-        start: '1452230583',
+        start: '1460303451',
         _xsrf: xsrftoken
     });
     var options = {
@@ -129,9 +130,28 @@ var getActivities = function(err, username) {
             data.push(chunk);
         });
         res.on('end', function() {
-            data = Buffer.concat(data).toString("utf-8");
-            console.log(JSON.parse(data).msg['1']);
-            
+            data = JSON.parse(Buffer.concat(data).toString("utf-8")).msg['1'];
+            var $ = cheerio.load(data);
+            var likeData = [];
+            var prefix = "http://www.zhihu.com";
+            $("div.zm-item[data-type-detail='member_voteup_answer']").each(function(){
+                likeData.push({
+                    date: $(".zm-profile-setion-time", this).text(),
+                    question_title: $(".question_link", this).text(),
+                    question_link: prefix + $(".question_link", this).attr("href"),
+                    author: $(".author-link").text(),
+                    author_link: prefix + $(".author-link").attr("href"),
+                    vote: $(".zm-item-vote-count", this).text(),
+                    answer: $(".zm-item-rich-text", this).html(),
+                    answer_link: prefix + $(".zm-item-rich-text", this).attr("data-entry-url")
+                })
+            });
+
+            fs.writeFile("zhihu.json", JSON.stringify(likeData, null, "\t"), function(err){
+                if(!err) console.log("save ok!");
+                else throw err;
+            });
+
         })
     });
 

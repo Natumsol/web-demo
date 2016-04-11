@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "async": "^2.0.0-rc.3",
-    "cheerio": "^0.20.0"
+    "cheerio": "^0.20.0",
+    "mongoose": "^4.4.12"
   },
   "name": "zhihu",
   "version": "1.0.0",
