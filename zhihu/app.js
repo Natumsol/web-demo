@@ -159,9 +159,10 @@ var getData = function(start, username) {
                 var zhihu = new Zhihu({
                     date: $(".zm-profile-setion-time", this).text(),
                     question_title: $(".question_link", this).text(),
-                    question_link: prefix + $(".question_link", this).attr("href"),
+                    question_link: (prefix + $(".question_link", this).attr("href")).replace(/answer.*$/, ""),
                     author: $(".author-link", this).text(),
-                    author_link: prefix + $(".author-link").attr("href"),
+                    author_link: prefix + $(".author-link", this).attr("href"),
+                    author_avatar: $(".zm-list-avatar", this).attr("src"),
                     vote: $(".zm-item-vote-count", this).text(),
                     answer: entities.decodeHTML($(".zm-item-rich-text .content", this).html()).replace(/\n/g, "").replace(/<span.*span>$/, "").replace(/"/g, "'").replace(/href='\/\//g ,"href='"),
                     answer_link: prefix + $(".zm-item-rich-text", this).attr("data-entry-url"),

@@ -36,6 +36,10 @@ var ZhihuSchema = new Schema({
     data_time: {
         type: Number,
         default: -1
+    },
+    author_avatar:{
+        type: String,
+        default: null
     }
 });
 

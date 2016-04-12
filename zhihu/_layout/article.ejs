@@ -1,0 +1,19 @@
+ <!DOCTYPE html>
+<html lang="zh_CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title><%= question_title %></title>
+    <link rel="stylesheet" href="../_style/normalize.css">
+    <link rel="stylesheet" href="../_style/main.css">
+</head>
+<body>
+    <div class="article-container clearfix">
+        <a class="title" href="<%= question_link %>"><%= question_title %></a>
+        <a class="author" href="<%= author_link %>"><%= author %></a>
+        <article class="article">
+            <%- answer %>
+        <a class="article-link" href="<%= answer_link %>">原文链接</a>
+    </div>
+</body
+</html>

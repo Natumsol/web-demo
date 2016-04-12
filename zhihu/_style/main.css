@@ -1,0 +1,97 @@
+::selection {
+    background: #fd7014;
+    color: #f9f7f7;
+}
+
+::-moz-selection {
+    background: #fd7014;
+    color: #f9f7f7;
+}
+
+::-webkit-selection {
+    background: #fd7014;
+    color: #f9f7f7;
+}
+
+.article-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 50px 40px 20px;
+    border: 1px dashed #ddd;
+}
+
+.article-container .title {
+    word-break: break-all;
+    font-size: 32px;
+    font-weight: bold;
+    line-height: 1.5;
+    color: #555;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+    width: 100%;
+}
+
+.article-container .author:before {
+    content: "作者:";
+    padding: 0 10px;
+}
+
+.article-container .author {
+    color: #888;
+    display: block;
+    text-align: right;
+    padding: 0 40px;
+    text-decoration: none;
+}
+
+.article-container .article {
+    color: #2f2f2f;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 27.2px;
+}
+
+.article-container .article blockquote {
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    background-color: whitesmoke;
+    border-left: 4px solid #999999;
+    word-break: break-word;
+    font-size: 15px;
+    font-weight: 100;
+    line-height: 30px;
+    margin-left: 0;
+}
+
+.article-container .article a {
+    text-decoration: none;
+    color:#3f72af;
+}
+
+.article-container .article-link{
+    text-decoration: none;
+    color:#3f72af;
+    transition: color ease 0.5s;
+    padding: 2px 5px;
+    float: right;
+}
+.article-container .article-link:hover{
+    background-color: #3f72af;
+    color:#f9f7f7;
+    border-radius: 2px;
+}
+
+.article-container .article img {
+    display: block;
+    padding: 10px 20px;
+    max-width: 70%;
+    border-radius: 10px;
+}
+.clearfix::after{
+    display: block;
+    height: 0;
+    content:"";
+    clear: both;
+}
+
