@@ -5,3 +5,4 @@
 /cache_control/statics
 /zhihu/config/config.js
 /zhihu/test.js
+/zhihu/logs/**
