@@ -11,7 +11,7 @@ var mongoose = require("mongoose");
 require("./config/mongoose.js")();
 var Zhihu = mongoose.model("Zhihu");
 var logger = require("./log");
-
+var entities = require("entities");
 var url = {
     home: "www.zhihu.com",
     login: "/login/email",
@@ -96,7 +96,6 @@ var getUserInfo = function(cookie, callback) {
         headers: {
             "Cookie": cookie,
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.108 Safari/537.36"
-
         }
     };
     var req = https.request(options, function(res) {
@@ -164,8 +163,9 @@ var getData = function(start, username) {
                     author: $(".author-link", this).text(),
                     author_link: prefix + $(".author-link").attr("href"),
                     vote: $(".zm-item-vote-count", this).text(),
-                    answer: $(".zm-item-rich-text", this).html(),
-                    answer_link: prefix + $(".zm-item-rich-text", this).attr("data-entry-url")
+                    answer: entities.decodeHTML($(".zm-item-rich-text .content", this).html()).replace(/\n/g, "").replace(/<span.*span>$/, "").replace(/"/g, "'").replace(/href='\/\//g ,"href='"),
+                    answer_link: prefix + $(".zm-item-rich-text", this).attr("data-entry-url"),
+                    data_time: Number.parseInt($(this).attr("data-time"))
                 });
                 likeData.push(zhihu);
             });
@@ -186,7 +186,7 @@ var getData = function(start, username) {
 
             setTimeout(function() {
                 getData(start, username);
-            }, 500 + Math.floor(Math.random() * 200));
+            }, 300 + Math.floor(Math.random() * 200));
         })
     });
 

@@ -33,6 +33,10 @@ var ZhihuSchema = new Schema({
 		type: String,
 		default: null
 	},
+    data_time: {
+        type: Number,
+        default: -1
+    }
 });
 
 
