@@ -118,6 +118,7 @@ var getUserInfo = function(cookie, callback) {
 var getData = function(start, username) {
     if (!start) {
         logger.info("爬取完成～");
+        require("./generateHTML");
         process.exit(0);
     }
     var postData = querystring.stringify({

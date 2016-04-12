@@ -1,0 +1,21 @@
+ <!DOCTYPE html>
+<html lang="zh_CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="../_style/normalize.css">
+    <link rel="stylesheet" href="../_style/main.css">
+</head>
+<body>
+<%for(var i = 0; i < zhihus.length; i ++){ %>
+    <div class="article-container clearfix">
+        <a class="title" href="<%= zhihus[i].question_link %>"><%= zhihus[i].question_title %></a>
+        <a class="author" href="<%= zhihus[i].author_link %>"><%= zhihus[i].author %></a>
+        <article class="article">
+            <%- zhihus[i].answer %>
+        <a class="article-link" href="<%= zhihus[i].answer_link %>">原文链接</a>
+    </div>
+<%} %>
+</body
+</html>
