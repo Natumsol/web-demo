@@ -2,15 +2,11 @@ var mongoose = require("mongoose");
 require("./config/mongoose.js")();
 var Zhihu = mongoose.model("Zhihu");
 var async = require("async");
-var count = 0;
 Zhihu.find({}, function(err, zhihus){
    console.log(zhihus.length);
    async.map(zhihus, function(item, callback){
-       item.answer = item.answer.replace(/"/g, "'");
-       
-       console.log(item.answer);
+       item.answer = item.answer.replace(/<span\s*class='\s*answer-date-link-wrap\s*'>.*<\/span>\s*$/g, "");
        item.save(function(err){
-           console.log(++count);
            callback(err);
        });
    }, function(err, results){

@@ -50,6 +50,8 @@
     font-size: 16px;
     font-weight: 400;
     line-height: 27.2px;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 .article-container .article blockquote {
@@ -88,6 +90,7 @@
     max-width: 70%;
     border-radius: 10px;
 }
+
 .clearfix::after{
     display: block;
     height: 0;
