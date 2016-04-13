@@ -118,7 +118,6 @@ var getUserInfo = function(cookie, callback) {
 var getData = function(start, username) {
     if (!start) {
         logger.info("爬取完成～");
-        require("./generateHTML");
         process.exit(0);
     }
     var postData = querystring.stringify({
@@ -166,9 +165,12 @@ var getData = function(start, username) {
                     author_avatar: $(".zm-list-avatar", this).attr("src"),
                     vote: $(".zm-item-vote-count", this).text(),
                     answer: entities.decodeHTML($(".zm-item-rich-text .content", this).html())
-                    .replace(/\n/g, "").replace(/"/g, "'")
-                    .replace(/href='\/\//g ,"href='")
-                    .replace(/<span\s*class='\s*answer-date-link-wrap\s*'>.*<\/span>\s*$/g, ""),
+                        .replace(/\n/g, "").replace(/"/g, "'")
+                        .replace(/href='\/\//g, "href='")
+                        .replace(/<span\s*class='\s*answer-date-link-wrap\s*'>.*<\/span>\s*$/g, "")
+                        .replace(/<br>/g, "\n")
+                        .replace(/<img\s*src\s*=\s*'(.+?)'.*>/g, "\n\n![]($1)\n\n")
+                        .replace(/-{2,}|\.{2,}/g, ""),
                     answer_link: prefix + $(".zm-item-rich-text", this).attr("data-entry-url"),
                     data_time: Number.parseInt($(this).attr("data-time"))
                 });
