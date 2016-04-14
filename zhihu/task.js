@@ -3,18 +3,77 @@ var fs = require('fs')
 var template = fs.readFileSync(__dirname + '/_layout/article.ejs', 'utf8');
 var book = fs.readFileSync(__dirname + '/_layout/book.ejs', 'utf8');
 var md = fs.readFileSync(__dirname + '/_layout/md.ejs', 'utf8');
+var chapter = fs.readFileSync(__dirname + '/_layout/chapter.ejs', 'utf8');
 var mongoose = require("mongoose");
 require("./config/mongoose.js")();
 var Zhihu = mongoose.model("Zhihu");
 var async = require("async");
-function render(zhihu, callback) {
+var https = require("https");
+var logger = require("./log");
+
+var allImages = []; // all images in chapter
+
+/* single html render function */
+function renderHTMl(zhihu, callback) {
     var view = ejs.render(template, zhihu);
     fs.writeFile("dst/" + zhihu.question_title.replace(/[\/|?|"|<|>|\\|\|]/g, "") + ".html", view, function(err) {
         callback(err);
     })
 }
 
-function renderBook(callback) {
+/* single md chaper render function */
+function renderChapter(zhihu, index, callback) {
+    var view = ejs.render(chapter, zhihu);
+    view = view.replace(/!\[\]\((.*?com\/(.*?\.jpg|jpeg|png|gif))\)/g, function(match, p1, p2, offset, string) {
+        allImages.push({
+            url: p1,
+            filename: p2
+        });
+        return "![](images/" + p2 + ")";
+    });
+    fs.writeFile("dst/Chapter" + (new Array((4 - index.toString().length)).join("0") + index) + ".md", view, function(err) {
+        callback(err);
+    })
+}
+
+function downloadAllImages(callback) {
+    async.mapLimit(allImages, 10, function(image, callback) {
+        logger.info("GET/ " + image.url);
+        https.get(image.url, function(res) {
+            var imageStream = fs.createWriteStream('images/' + image.filename);
+            res.pipe(imageStream);
+            imageStream.on("finish", function() {
+                logger.info(image.url + " download successfully!");
+                callback(null);
+            });
+            imageStream.on("error", function(err) {
+                logger.error(err.toString());
+                callback(err);
+            })
+        })
+    }, function(err) {
+        callback(err);
+    })
+}
+
+/* generate all chapter */
+function generateChapter(callback) {
+    Zhihu.find({}).sort({ data_time: 1 }).exec(function(err, zhihus) {
+        if (err) throw err;
+        else {
+            async.forEachOf(zhihus, renderChapter, function(err) {
+                fs.writeFile("images.json", JSON.stringify(allImages), function(err) {
+                    if (err) throw err;
+                    else console.log("allImages save ok !");
+                })
+                callback(err);
+            });
+        }
+    });
+}
+
+/* generate html book */
+function generateHTMLBook(callback) {
     Zhihu.find({}).sort({ data_time: 1 }).exec(function(err, zhihus) {
         if (err) throw err;
         else {
@@ -26,12 +85,24 @@ function renderBook(callback) {
     });
 }
 
-function renderMd(callback) {
-    Zhihu.find({}).sort({ data_time: 1 }).limit(10).exec(function(err, zhihus) {
+/* generate md book */
+function generateMd(callback) {
+    Zhihu.find({}).sort({ data_time: 1 }).exec(function(err, zhihus) {
         if (err) throw err;
         else {
-            var mybook = ejs.render(md, { zhihus: zhihus });
-            fs.writeFile("dst/" + "book.md", mybook, function(err) {
+            var renderTasks = [];
+            for (var i = 0; i < zhihus.length; i += 50) {
+                renderTasks.push(zhihus.slice(i, i + 50));
+            }
+            async.forEachOf(renderTasks, function(task, index, callback) {
+                var mybook = ejs.render(md, { zhihus: task });
+                mybook = mybook.replace(/!\[\]\((.*?com\/(.*?\.jpg|jpeg|png|gif))\)/g, function(match, p1, p2, offset, string) {
+                    return "![](images/" + p2 + ")";
+                });
+                fs.writeFile("dst/" + "book" + (new Array((3 - index.toString().length)).join("0") + index) + ".md", mybook, function(err) {
+                    callback(err);
+                })
+            }, function(err) {
                 if (callback) callback(err);
                 else {
                     if (err) throw err;
@@ -40,27 +111,25 @@ function renderMd(callback) {
                         process.exit(0);
                     }
                 }
-
             })
+
         }
     });
 }
-function renderHTML(callback) {
+
+
+
+/* generate all html */
+function generateHTML(callback) {
     Zhihu.find({}).sort({ data_time: 1 }).exec(function(err, zhihus) {
         if (err) throw err;
         else {
-            async.map(zhihus, render, function(err) {
+            async.map(zhihus, renderHTMl, function(err) {
                 callback(err);
             });
         }
     });
 
-}
-
-function generate(callback) {
-    async.parallel([renderBook, renderHTML], function(err) {
-        callback(err);
-    });
 }
 
 function clean(callback) {
@@ -72,19 +141,19 @@ function clean(callback) {
             });
         }, function(err) {
             if (callback) callback(err);
+            else {
+                if (err) throw err;
                 else {
-                    if (err) throw err;
-                    else {
-                        console.log("clean ok!");
-                        process.exit(0);
-                    }
+                    console.log("clean ok!");
+                    process.exit(0);
                 }
+            }
         });
     })
 }
 
 function init() {
-    async.series([clean, generate], function(err) {
+    async.series([clean, generateChapter, downloadAllImages], function(err) {
         if (err) throw err;
         else {
             console.log("file generate ok!");
@@ -96,8 +165,6 @@ function init() {
 module.exports = {
     init: init,
     clean: clean,
-    renderBook: renderBook,
-    renderHTML: renderHTML,
-    renderMd: renderMd
+    generateMd: generateMd
 }
 
