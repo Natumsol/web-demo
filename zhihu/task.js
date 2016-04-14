@@ -30,7 +30,7 @@ function renderChapter(zhihu, index, callback) {
             filename: p2
         });
         return "![](images/" + p2 + ")";
-    });
+    }).replace(/!\[\]\((\/\/.*?equation\?.*?)\)/g, "![](https:$1)");
     fs.writeFile("dst/Chapter" + (new Array((4 - index.toString().length)).join("0") + index) + ".md", view, function(err) {
         callback(err);
     })
@@ -58,14 +58,12 @@ function downloadAllImages(callback) {
 
 /* generate all chapter */
 function generateChapter(callback) {
-    Zhihu.find({}).sort({ data_time: 1 }).exec(function(err, zhihus) {
+    Zhihu.find({}).sort({
+        data_time: 1
+    }).exec(function(err, zhihus) {
         if (err) throw err;
         else {
             async.forEachOf(zhihus, renderChapter, function(err) {
-                fs.writeFile("images.json", JSON.stringify(allImages), function(err) {
-                    if (err) throw err;
-                    else console.log("allImages save ok !");
-                })
                 callback(err);
             });
         }
@@ -74,10 +72,15 @@ function generateChapter(callback) {
 
 /* generate html book */
 function generateHTMLBook(callback) {
-    Zhihu.find({}).sort({ data_time: 1 }).exec(function(err, zhihus) {
+    Zhihu.find({}).sort({
+        data_time: 1
+    }).exec(function(err, zhihus) {
         if (err) throw err;
         else {
-            var mybook = ejs.render(book, { zhihus: zhihus, title: "知乎电子书" });
+            var mybook = ejs.render(book, {
+                zhihus: zhihus,
+                title: "知乎电子书"
+            });
             fs.writeFile("dst/" + "book.html", mybook, function(err) {
                 callback(err);
             })
@@ -87,7 +90,9 @@ function generateHTMLBook(callback) {
 
 /* generate md book */
 function generateMd(callback) {
-    Zhihu.find({}).sort({ data_time: 1 }).exec(function(err, zhihus) {
+    Zhihu.find({}).sort({
+        data_time: 1
+    }).exec(function(err, zhihus) {
         if (err) throw err;
         else {
             var renderTasks = [];
@@ -95,10 +100,17 @@ function generateMd(callback) {
                 renderTasks.push(zhihus.slice(i, i + 50));
             }
             async.forEachOf(renderTasks, function(task, index, callback) {
-                var mybook = ejs.render(md, { zhihus: task });
-                mybook = mybook.replace(/!\[\]\((.*?com\/(.*?\.jpg|jpeg|png|gif))\)/g, function(match, p1, p2, offset, string) {
-                    return "![](images/" + p2 + ")";
+                var mybook = ejs.render(md, {
+                    zhihus: task
                 });
+                mybook = mybook.replace(/!\[\]\((.*?com\/(.*?\.jpg|jpeg|png|gif))\)/g, function(match, p1, p2, offset, string) {
+                    allImages.push({
+                        url: p1,
+                        filename: p2
+                    });
+                    return "![](images/" + p2 + ")";
+                }).replace(/!\[\]\((\/\/.*?equation\?.*?)\)/g, "![](https:$1)");
+
                 fs.writeFile("dst/" + "book" + (new Array((3 - index.toString().length)).join("0") + index) + ".md", mybook, function(err) {
                     callback(err);
                 })
@@ -117,11 +129,11 @@ function generateMd(callback) {
     });
 }
 
-
-
 /* generate all html */
 function generateHTML(callback) {
-    Zhihu.find({}).sort({ data_time: 1 }).exec(function(err, zhihus) {
+    Zhihu.find({}).sort({
+        data_time: 1
+    }).exec(function(err, zhihus) {
         if (err) throw err;
         else {
             async.map(zhihus, renderHTMl, function(err) {
@@ -136,9 +148,11 @@ function clean(callback) {
     fs.readdir("./dst", function(err, files) {
         if (err) throw err;
         else async.map(files, function(item, callback) {
-            fs.unlink("./dst/" + item, function(err) {
-                callback(err);
-            });
+            if (!fs.lstatSync("./dst/" + item).isDirectory()) {
+                fs.unlink("./dst/" + item, function(err) {
+                    callback(err);
+                });
+            }
         }, function(err) {
             if (callback) callback(err);
             else {
@@ -153,7 +167,7 @@ function clean(callback) {
 }
 
 function init() {
-    async.series([clean, generateChapter, downloadAllImages], function(err) {
+    async.series([clean, generateMd, downloadAllImages], function(err) {
         if (err) throw err;
         else {
             console.log("file generate ok!");
@@ -167,4 +181,3 @@ module.exports = {
     clean: clean,
     generateMd: generateMd
 }
-
