@@ -12,6 +12,7 @@ require("./config/mongoose.js")();
 var Zhihu = mongoose.model("Zhihu");
 var logger = require("./log");
 var entities = require("entities");
+var fs = require("fs");
 var url = {
     home: "www.zhihu.com",
     login: "/login/email",
@@ -107,6 +108,10 @@ var getUserInfo = function(cookie, callback) {
             data = Buffer.concat(data).toString("utf-8");
             var $ = cheerio.load(data);
             user.username = $(".top-nav-profile .name").text();
+            fs.writeFile("./config/userInfo.json", JSON.stringify(user), function(err){
+                if(err) throw err;
+                else console.log("userInfo save ok!");
+            })
             callback(null, user.username);
         })
     });

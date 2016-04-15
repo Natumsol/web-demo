@@ -1,0 +1,10 @@
+pandoc -S -o book00.epub --epub-cover-image=./cover/cover.png  title00.conf book00.md
+pandoc -S -o book01.epub --epub-cover-image=./cover/cover.png  title01.conf book01.md
+pandoc -S -o book02.epub --epub-cover-image=./cover/cover.png  title02.conf book02.md
+pandoc -S -o book03.epub --epub-cover-image=./cover/cover.png  title03.conf book03.md
+pandoc -S -o book04.epub --epub-cover-image=./cover/cover.png  title04.conf book04.md
+pandoc -S -o book05.epub --epub-cover-image=./cover/cover.png  title05.conf book05.md
+pandoc -S -o book06.epub --epub-cover-image=./cover/cover.png  title06.conf book06.md
+pandoc -S -o book07.epub --epub-cover-image=./cover/cover.png  title07.conf book07.md
+pandoc -S -o book08.epub --epub-cover-image=./cover/cover.png  title08.conf book08.md
+pandoc -S -o book09.epub --epub-cover-image=./cover/cover.png  title09.conf book09.md
