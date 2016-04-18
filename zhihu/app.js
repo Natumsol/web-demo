@@ -13,6 +13,9 @@ var Zhihu = mongoose.model("Zhihu");
 var logger = require("./log");
 var entities = require("entities");
 var fs = require("fs");
+var prompt = require('prompt');
+var colors = require("colors");
+var stream = require("stream");
 var url = {
     home: "www.zhihu.com",
     login: "/login/email",
@@ -24,28 +27,78 @@ var user = {}; // store user info
 var xsrftoken; // store xsrf token
 var count = 0;
 
+prompt.start();
 
+
+/* get email and password */
+var getEmailAndPassword = function (callback) {
+    console.log(colors.green("友情提示：本软件不会保存或上传您的用户名和密码，仅作登录认证之用，请放心使用~\n"))
+    prompt.get([{
+        name: 'email',
+        required: true,
+        description: '知乎注册邮箱',
+        pattern: /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/
+    }, {
+            name: 'password',
+            hidden: true,
+            description: '登录密码',
+            required: true,
+        }], function (err, result) {
+            config.email = result.email;
+            config.password = result.password;
+            callback(err);
+        });
+}
 /* get _xsrf token */
-var getToken = function(callback) {
+var getToken = function (callback) {
     var options = {
         hostname: url.home,
         path: "/",
         port: 443,
         method: "GET"
     };
-    var req = https.request(options, function(res) {
+    var req = https.request(options, function (res) {
         var data = [];
-        res.on('data', function(chunk) {
+        res.on('data', function (chunk) {
             data.push(chunk);
         });
-        res.on('end', function() {
+        res.on('end', function () {
             data = Buffer.concat(data).toString("utf-8");
             var $ = cheerio.load(data);
             xsrftoken = $("input[name='_xsrf']").val();
-            callback(null, {
-                token: xsrftoken,
-                cookie: res.headers['set-cookie']
-            });
+            var cookie = res.headers['set-cookie'];
+            if ($(".view-signin .captcha").length) { // 如果有验证码，则提示用户手动输入
+                https.request({
+                    hostname: url.home,
+                    path: "/captcha.gif?type=login&r=" + Date.now(),
+                    port: 443,
+                    method: "GET",
+                    headers: {
+                        "Cookie": cookie,
+                        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.108 Safari/537.36",
+                    }
+                }, function (res) {
+                    var img = fs.createWriteStream("验证码.jpg");
+                    res.pipe(img);
+                    img.on("finish", function () {
+                        console.log("登录需要验证码，请输入根目录下的'验证码.jpg'上所示的验证码：");
+                        prompt.get([{
+                            name: 'captcha',
+                            required: true,
+                            description: '请输入验证码',
+                            pattern: /[0-9a-zA-Z]{4}/
+                        }], function (err, result) {
+                            callback(err, {
+                                token: xsrftoken,
+                                captcha: result['captcha'],
+                                cookie: cookie
+                            });
+                        });
+                    })
+                }).end();
+
+            }
+
         })
     });
 
@@ -53,13 +106,13 @@ var getToken = function(callback) {
 }
 
 /* do login, get login in cookie */
-var login = function(data, callback) {
+var login = function (data, callback) {
     var postData = {
         password: config.password,
         remember_me: true,
         email: config.email,
-        _xsrf: data.token
-
+        _xsrf: data.token,
+        captcha: data.captcha
     }
     var options = {
         hostname: url.home,
@@ -73,14 +126,20 @@ var login = function(data, callback) {
         }
     };
 
-    var req = https.request(options, function(res) {
+    var req = https.request(options, function (res) {
         loginCookie = res.headers["set-cookie"];
         for (var i = 0; i < loginCookie.length; i++) {
             if (loginCookie[i].indexOf("xsrf") != -1) {
                 loginCookie[i] = loginCookie[i].replace("_xsrf=;", "_xsrf=" + xsrftoken + ";");
             }
         }
-        callback(null, loginCookie);
+        var loginInfo = new stream.Writable();
+        res.pipe(loginInfo);
+        // loginInfo.on("finish", function () {
+        //     console.log(loginInfo)
+        //     callback(null, loginCookie);
+        // })
+        res.on("")
     });
 
     req.write(querystring.stringify(postData));
@@ -88,7 +147,7 @@ var login = function(data, callback) {
 }
 
 /* get userInfo */
-var getUserInfo = function(cookie, callback) {
+var getUserInfo = function (cookie, callback) {
     var options = {
         hostname: url.home,
         path: "/",
@@ -99,17 +158,17 @@ var getUserInfo = function(cookie, callback) {
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.108 Safari/537.36"
         }
     };
-    var req = https.request(options, function(res) {
+    var req = https.request(options, function (res) {
         var data = [];
-        res.on('data', function(chunk) {
+        res.on('data', function (chunk) {
             data.push(chunk);
         });
-        res.on('end', function() {
+        res.on('end', function () {
             data = Buffer.concat(data).toString("utf-8");
             var $ = cheerio.load(data);
             user.username = $(".top-nav-profile .name").text();
-            fs.writeFile("./config/userInfo.json", JSON.stringify(user), function(err){
-                if(err) throw err;
+            fs.writeFile("./config/userInfo.json", JSON.stringify(user), function (err) {
+                if (err) throw err;
                 else console.log("userInfo save ok!");
             })
             callback(null, user.username);
@@ -120,7 +179,7 @@ var getUserInfo = function(cookie, callback) {
 }
 
 /* get activities data */
-var getData = function(start, username) {
+var getData = function (start, username) {
     if (!start) {
         logger.info("爬取完成～");
         process.exit(0);
@@ -143,12 +202,12 @@ var getData = function(start, username) {
     };
     logger.info("开始爬取第" + (++count) + "波数据...");
     logger.trace("params is :" + "start:" + start);
-    var req = https.request(options, function(res) {
+    var req = https.request(options, function (res) {
         var data = [];
-        res.on('data', function(chunk) {
+        res.on('data', function (chunk) {
             data.push(chunk);
         });
-        res.on('end', function() {
+        res.on('end', function () {
 
             try {
                 data = JSON.parse(Buffer.concat(data).toString("utf-8")).msg['1'];
@@ -160,7 +219,7 @@ var getData = function(start, username) {
             var likeData = [];
             var prefix = "http://www.zhihu.com";
             var member_voteup_answer = $("div.zm-item[data-type-detail='member_voteup_answer']");
-            member_voteup_answer.each(function(index, value, array) {
+            member_voteup_answer.each(function (index, value, array) {
                 var zhihu = new Zhihu({
                     date: $(".zm-profile-setion-time", this).text(),
                     question_title: $(".question_link", this).text(),
@@ -182,12 +241,12 @@ var getData = function(start, username) {
                 likeData.push(zhihu);
             });
 
-            (function(likeData, count) {
-                async.map(likeData, function(item, callback) {
-                    item.save(function(err) {
+            (function (likeData, count) {
+                async.map(likeData, function (item, callback) {
+                    item.save(function (err) {
                         callback(err);
                     });
-                }, function(err, results) {
+                }, function (err, results) {
                     if (err) throw err;
                     else logger.info("第" + count + "波数据爬取完成～");
                 })
@@ -196,7 +255,7 @@ var getData = function(start, username) {
             var zm_items = $("div.zm-item");
             var start = $(zm_items[zm_items.length - 1]).attr("data-time");
 
-            setTimeout(function() {
+            setTimeout(function () {
                 getData(start, username);
             }, 300 + Math.floor(Math.random() * 200));
         })
@@ -206,7 +265,7 @@ var getData = function(start, username) {
     req.end()
 }
 
-var getActivities = function(err, username) {
+var getActivities = function (err, username) {
     var options = {
         hostname: url.home,
         path: url.people.replace("${username}", username),
@@ -218,12 +277,12 @@ var getActivities = function(err, username) {
 
         }
     };
-    var req = https.request(options, function(res) {
+    var req = https.request(options, function (res) {
         var data = [];
-        res.on('data', function(chunk) {
+        res.on('data', function (chunk) {
             data.push(chunk);
         });
-        res.on('end', function() {
+        res.on('end', function () {
             data = Buffer.concat(data).toString("utf-8");
             var $ = cheerio.load(data);
             getData($("div.zm-item").eq(0).attr("data-time"), username);
@@ -232,5 +291,7 @@ var getActivities = function(err, username) {
 
     req.end();
 }
-
-async.waterfall([getToken, login, getUserInfo], getActivities);
+process.on('uncaughtException', function (err) {
+    console.log(err);
+});
+async.waterfall([getEmailAndPassword, getToken, login, getUserInfo], getActivities);

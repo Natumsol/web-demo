@@ -20,7 +20,7 @@ gulp.task("generate", function () {
         async.map(files, function (file, callback) {
             if (!fs.statSync("dst/" + file).isDirectory() && file.match(/^book\d{2}\.md$/)) {
                 var numCount = file.match(/^book(\d{2})\.md$/)[1];
-                tasks.push("pandoc -S -o book" + numCount +
+                tasks.push("\npandoc -S -o book" + numCount +
                     ".epub --epub-cover-image=" + './cover/cover.png ' + " title" + numCount + ".conf " + "book" + numCount + ".md");
             }
             callback(null);

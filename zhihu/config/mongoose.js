@@ -3,10 +3,9 @@ var mongoose = require("mongoose"),
 module.exports = function(){
 	var db = mongoose.connect(config.db, function(err){
 		if(err) {
-			console.log(err.message);
-			console.log("数据库连接失败！");
+			throw err;
 		} else {
-			console.log("数据库连接成功！");
+			// console.log("数据库连接成功！");
 		}
 	});
 

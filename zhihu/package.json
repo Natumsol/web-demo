@@ -7,7 +7,8 @@
     "gulp": "^3.9.1",
     "log4js": "^0.6.33",
     "mongoose": "^4.4.12",
-    "node-pandoc": "^0.2.0"
+    "node-pandoc": "^0.2.0",
+    "prompt": "^1.0.0"
   },
   "name": "zhihu",
   "version": "1.0.0",
