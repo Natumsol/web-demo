@@ -22,11 +22,10 @@ var url = {
     activities: "/people/${username}/activities",
     people: "/people/${username}"
 }
-var loginCookie; // store login info
-var user = {}; // store user info
+var loginCookie = fs.existsSync(__dirname + '/config/cookie') ? fs.readFileSync(__dirname + '/config/cookie', 'utf8') : null; // store login info
+var user = fs.existsSync(__dirname + '/config/userInfo.json') ? require(__dirname + '/config/userInfo.json'): {}; // store user info
 var xsrftoken; // store xsrf token
 var count = 0;
-
 prompt.start();
 
 
@@ -133,13 +132,21 @@ var login = function (data, callback) {
                 loginCookie[i] = loginCookie[i].replace("_xsrf=;", "_xsrf=" + xsrftoken + ";");
             }
         }
-        var loginInfo = new stream.Writable();
-        res.pipe(loginInfo);
-        // loginInfo.on("finish", function () {
-        //     console.log(loginInfo)
-        //     callback(null, loginCookie);
-        // })
-        res.on("")
+        fs.writeFile('config/cookie', loginCookie, function (err) {
+            if (err) throw err;
+        })
+        var loginInfo = [];
+        res.on('data', function (chunk) {
+            loginInfo.push(chunk);
+        });
+        res.on("end", function () {
+            loginInfo = JSON.parse(Buffer.concat(loginInfo));
+            if (loginInfo.r == 0) {
+                callback(null, loginCookie);
+            } else {
+                callback("登陆失败！");
+            }
+        })
     });
 
     req.write(querystring.stringify(postData));
@@ -284,6 +291,7 @@ var getActivities = function (err, username) {
         });
         res.on('end', function () {
             data = Buffer.concat(data).toString("utf-8");
+            console.log(data);
             var $ = cheerio.load(data);
             getData($("div.zm-item").eq(0).attr("data-time"), username);
         })
@@ -291,7 +299,12 @@ var getActivities = function (err, username) {
 
     req.end();
 }
-process.on('uncaughtException', function (err) {
-    console.log(err);
-});
-async.waterfall([getEmailAndPassword, getToken, login, getUserInfo], getActivities);
+
+if (loginCookie) {
+    console.log(user);
+    console.log(colors.green("已检测您之前已登陆过，直接登陆...\n"));
+    getActivities(null, user.username);
+
+} else {
+    async.waterfall([getEmailAndPassword, getToken, login, getUserInfo], getActivities);
+}

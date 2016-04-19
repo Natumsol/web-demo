@@ -2,6 +2,7 @@
   "dependencies": {
     "async": "^2.0.0-rc.3",
     "cheerio": "^0.20.0",
+    "colors": "^1.1.2",
     "ejs": "^2.4.1",
     "entities": "^1.1.1",
     "gulp": "^3.9.1",
