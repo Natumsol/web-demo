@@ -28,7 +28,6 @@ var xsrftoken = loginCookie ? loginCookie.match(/_xsrf=([a-zA-Z0-9]+);/)[1] : nu
 var count = 0;
 prompt.start();
 
-
 /* get email and password */
 var getEmailAndPassword = function (callback) {
     console.log(colors.green("友情提示：本软件不会保存或上传您的用户名和密码，仅作登录认证之用，请放心使用~\n"))
@@ -300,10 +299,23 @@ var getActivities = function (err, username) {
     req.end();
 }
 
+/* clean old data */
+var cleanOldData = function (callback) {
+    Zhihu.find().remove().exec(function (err) {
+        callback(err);
+    });
+}
+
 if (loginCookie) {
     console.log(colors.green("已检测您之前已登陆过，直接登陆..."));
-    getData(0, user.username);
-
+    async.series([cleanOldData], function (err) {
+        if (err) throw err;
+        else getData(0, user.username);
+    });
 } else {
-    async.waterfall([getEmailAndPassword, getToken, login, getUserInfo], getActivities);
+    async.series([cleanOldData], function (err) {
+        if (err) throw err;
+        else async.waterfall([getEmailAndPassword, getToken, login, getUserInfo], getActivities);
+    });
+
 }

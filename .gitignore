@@ -7,7 +7,9 @@
 /zhihu/config/cookie
 /zhihu/test.js
 /zhihu/logs/**
-/zhihu/dst/**
+/zhihu/dst/*.*
+/zhihu/dst/images/*.*
+/zhihu/dst/cover/*.*
 /zhihu/test.*
 /zhihu/book.*
 /zhihu/验证码.jpg

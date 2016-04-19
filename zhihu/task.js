@@ -12,7 +12,7 @@ var async = require("async");
 var https = require("https");
 var logger = require("./log");
 var userInfo = require("./config/userInfo.json");
-
+var colors = require("colors");
 var allImages = []; // all images in chapter
 
 /* single html render function */
@@ -40,19 +40,25 @@ function renderChapter(zhihu, index, callback) {
 
 function downloadAllImages(callback) {
     async.mapLimit(allImages, 10, function (image, callback) {
-        logger.info("GET/ " + image.url);
-        https.get(image.url, function (res) {
-            var imageStream = fs.createWriteStream('dst/images/' + image.filename);
-            res.pipe(imageStream);
-            imageStream.on("finish", function () {
-                logger.info(image.url + " download successfully!");
-                callback(null);
-            });
-            imageStream.on("error", function (err) {
-                logger.error(err.toString());
-                callback(err);
+        if (fs.existsSync('dst/images/' + image.filename)) {
+            logger.info(image.filename + " already exists, skipping...");
+            callback(null);
+        } else {
+            logger.info("GET/ " + image.url);
+            https.get(image.url, function (res) {
+                var imageStream = fs.createWriteStream('dst/images/' + image.filename);
+                res.pipe(imageStream);
+                imageStream.on("finish", function () {
+                    logger.info(image.url + " download successfully!");
+                    callback(null);
+                });
+                imageStream.on("error", function (err) {
+                    logger.error(err.toString());
+                    callback(err);
+                })
             })
-        })
+        }
+
     }, function (err) {
         callback(err);
     })
@@ -94,12 +100,12 @@ function generateHTMLBook(callback) {
 function generateMd(callback) {
     Zhihu.find({}).sort({
         data_time: 1
-    }).exec(function (err, zhihus) {
+    }).limit(10).exec(function (err, zhihus) {
         if (err) throw err;
         else {
             var renderTasks = [];
-            for (var i = 0; i < zhihus.length; i += 50) {
-                renderTasks.push(zhihus.slice(i, i + 50));
+            for (var i = 0; i < zhihus.length; i += 30) {
+                renderTasks.push(zhihus.slice(i, i + 30));
             }
             async.forEachOf(renderTasks, function (task, index, callback) {
                 var mybook = ejs.render(md, {
@@ -162,6 +168,8 @@ function clean(callback) {
                 fs.unlink("./dst/" + item, function (err) {
                     callback(err);
                 });
+            } else {
+                 callback(null);
             }
         }, function (err) {
             if (callback) callback(err);
@@ -177,11 +185,36 @@ function clean(callback) {
 }
 
 function init() {
-    async.series([generateMd, downloadAllImages], function (err) {
+    async.series([clean, generateMd, downloadAllImages], function (err) {
         if (err) throw err;
         else {
-            console.log("file generate ok!");
-            process.exit(0);
+            var tasks = ['@echo off'];
+            fs.readdir("dst/", function (err, files) {
+                async.map(files, function (file, callback) {
+                    if (!fs.statSync("dst/" + file).isDirectory() && file.match(/^book\d{2}\.md$/)) {
+                        var numCount = file.match(/^book(\d{2})\.md$/)[1];
+                        tasks.push("\npandoc -S -o book" + numCount +
+                            ".epub --epub-cover-image=" + './cover/cover.png ' + " title" + numCount + ".conf " + "book" + numCount + ".md");
+                    }
+                    callback(null);
+                }, function (err) {
+                    if (err) throw err;
+                    else {
+                        tasks.push("for %%i in (*.md) do @del %%i");
+                        tasks.push("for %%i in (*.conf) do @del %%i")
+                        tasks.push("echo 'done!!'");
+                        tasks.push("pause");
+                        fs.writeFile("dst/make.bat", tasks.join("\n"), function (err) {
+                            if (err) throw err;
+                            else {
+                                console.log(colors.green("电子书生成脚本已经生成，请打在./dst目录下双击make.bat即可生成epub格式的电子书"));
+                                process.exit(0);
+                            }
+                        })
+                    }
+                });
+
+            })
         }
     });
 }
