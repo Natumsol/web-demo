@@ -4,8 +4,10 @@
 /**/node_modules
 /cache_control/statics
 /zhihu/config/config.js
+/zhihu/config/cookie
 /zhihu/test.js
 /zhihu/logs/**
 /zhihu/dst/**
 /zhihu/test.*
 /zhihu/book.*
+/zhihu/验证码.jpg

@@ -23,8 +23,8 @@ var url = {
     people: "/people/${username}"
 }
 var loginCookie = fs.existsSync(__dirname + '/config/cookie') ? fs.readFileSync(__dirname + '/config/cookie', 'utf8') : null; // store login info
-var user = fs.existsSync(__dirname + '/config/userInfo.json') ? require(__dirname + '/config/userInfo.json'): {}; // store user info
-var xsrftoken; // store xsrf token
+var user = fs.existsSync(__dirname + '/config/userInfo.json') ? require(__dirname + '/config/userInfo.json') : {}; // store user info
+var xsrftoken = loginCookie ? loginCookie.match(/_xsrf=([a-zA-Z0-9]+);/)[1] : null; // store xsrf token
 var count = 0;
 prompt.start();
 
@@ -187,7 +187,7 @@ var getUserInfo = function (cookie, callback) {
 
 /* get activities data */
 var getData = function (start, username) {
-    if (!start) {
+    if (start == null) {
         logger.info("爬取完成～");
         process.exit(0);
     }
@@ -291,7 +291,7 @@ var getActivities = function (err, username) {
         });
         res.on('end', function () {
             data = Buffer.concat(data).toString("utf-8");
-            console.log(data);
+            // console.log(data);
             var $ = cheerio.load(data);
             getData($("div.zm-item").eq(0).attr("data-time"), username);
         })
@@ -301,9 +301,8 @@ var getActivities = function (err, username) {
 }
 
 if (loginCookie) {
-    console.log(user);
-    console.log(colors.green("已检测您之前已登陆过，直接登陆...\n"));
-    getActivities(null, user.username);
+    console.log(colors.green("已检测您之前已登陆过，直接登陆..."));
+    getData(0, user.username);
 
 } else {
     async.waterfall([getEmailAndPassword, getToken, login, getUserInfo], getActivities);
