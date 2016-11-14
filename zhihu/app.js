@@ -207,7 +207,7 @@ var getData = function (start, username) {
         }
     };
     logger.info("开始爬取第" + (++count) + "波数据...");
-    logger.trace("params is :" + "start:" + start);
+    logger.trace("[params: ] " + "start:" + start);
     var req = https.request(options, function (res) {
         var data = [];
         res.on('data', function (chunk) {
@@ -290,7 +290,7 @@ var getActivities = function (err, username) {
         });
         res.on('end', function () {
             data = Buffer.concat(data).toString("utf-8");
-            // console.log(data);
+            console.log(data);
             var $ = cheerio.load(data);
             getData($("div.zm-item").eq(0).attr("data-time"), username);
         })

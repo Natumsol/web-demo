@@ -1,0 +1,10 @@
+<% if(type == 'answer') {%>
+#  [<%= question.title %>](<%= question.url %>)
+
+<% } else { %>
+#  [<%= title %>](<%= url %>)
+<% } %>
+
+[@<%=author.name %>](<%= author.url %>)
+
+<%- content %>
