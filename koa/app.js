@@ -1,32 +1,35 @@
 
-var koa = require('koa');
-var parse = require('co-body');
+'use strict';
 
-var app = module.exports = koa();
+let koa = require('koa')
 
-// POST .name to /uppercase
-// co-body accepts application/json
-// and application/x-www-form-urlencoded
-var count = 1;
+let app = koa()
+
+// normal route
 app.use(function* (next) {
-  console.log('第' + (count ++) + "次穿过 404 中间件");
-  yield next;
-  console.log('第' + (count ++) + "次穿过 404 中间件");
-  console.log(this.body);
-  if(404 != this.status) return;
-
-  this.status = 404;
-  this.body = "Page Not Found";
-});
-
-app.use(function* (next) {
-  if (this.path == "/") {
-   this.body = {
-     name: "liujia"
-   }
-  } else {
-    yield next;
+  if (this.path !== '/') {
+    return yield next
   }
+
+  this.body = 'hello world'
 });
 
-if (!module.parent) app.listen(4000);
+// /404 route
+app.use(function* (next) {
+  if (this.path !== '/404') {
+    return yield next;
+  }
+
+  this.body = 'page not found'
+});
+
+// /500 route
+app.use(function* (next) {
+  if (this.path !== '/500') {
+    return yield next;
+  }
+
+  this.body = 'internal server error'
+});
+
+app.listen(4000)
