@@ -1,6 +1,7 @@
 var mongoose = require("mongoose"),
 	config = require("./config.js");
 module.exports = function(){
+	console.log(config);
 	var db = mongoose.connect(config.db, function(err){
 		if(err) {
 			throw err;

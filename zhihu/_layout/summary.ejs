@@ -1,0 +1,10 @@
+# Summary
+
+<% for(var i in summary){ %>
+<% if(summary.hasOwnProperty(i)) { %>
+* [<%= i %>]()
+<% for(var j = 0; j < summary[i].length; j++) {%>
+    * [<%=summary[i][j]%>](<%=summary[i][j]%>)
+<% } %>
+<% } %>
+<% } %>
