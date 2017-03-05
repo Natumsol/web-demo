@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>弹出层</title>
+    <style>
+        .poplayer-mask {
+            opacity: 0.4;
+            background: rgb(0, 0, 0);
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            user-select: none;
+            z-index: 1025;
+        }
+        
+        .poplayer-container {
+            z-index: 1026;
+            position: absolute;
+            background: #fff;
+            padding: 5px;
+            font-size: 14px;
+            border-radius: 5px;
+            min-width: 300px;
+        }
+        
+        .poplayer-header {
+            padding: 5px 10px;
+            border-bottom: 1px solid #ddd;
+            position: relative;
+        }
+        
+        .poplayer-title,
+        .poplayer-close {
+            display: inline-block;
+        }
+        
+        .poplayer-close {
+            position: absolute;
+            right: -2px;
+            top: -7px;
+            text-shadow: 0 1px 0 #FFF;
+            color: #000;
+            opacity: 0.5;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .poplayer-close:hover {
+            opacity: 1;
+        }
+        .poplayer-content {
+            
+        }
+    </style>
+</head>
+
+<body>
+    <div class="poplayer-mask"></div>
+    <div class="poplayer-container">
+        <div class="poplayer-header">
+            <div class="poplayer-title">标题</div>
+            <div class="poplayer-close"> × </div>
+        </div>
+        <div class="poplayer-content">
+            hello， world
+        </div>
+        <div class="poplayer-footer"></div>
+    </div>
+    <!--<script src="./index.js"></script>-->
+</body>
+
+</html>
