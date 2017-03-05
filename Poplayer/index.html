@@ -26,6 +26,9 @@
             font-size: 14px;
             border-radius: 5px;
             min-width: 300px;
+            left: 50%;
+            margin-left: -150px;
+            top: 40%;
         }
         
         .poplayer-header {
@@ -41,7 +44,7 @@
         
         .poplayer-close {
             position: absolute;
-            right: -2px;
+            right: 0px;
             top: -7px;
             text-shadow: 0 1px 0 #FFF;
             color: #000;
@@ -53,8 +56,9 @@
         .poplayer-close:hover {
             opacity: 1;
         }
+        
         .poplayer-content {
-            
+            padding: 5px 10px;
         }
     </style>
 </head>
@@ -72,6 +76,39 @@
         <div class="poplayer-footer"></div>
     </div>
     <!--<script src="./index.js"></script>-->
+
+    <script>
+        window.onload = function () {
+            var poplayerHeader = document.getElementsByClassName("poplayer-header")[0],
+                poplayerContainer = document.getElementsByClassName("poplayer-container")[0];
+
+            poplayerHeader.onmousedown = function (e) {
+                var oEvent = e || window.event,
+                    disL = oEvent.clientX - poplayerContainer.offsetLeft,
+                    disT = oEvent.clientY - poplayerContainer.offsetTop,
+                    maxL = document.documentElement.clientWidth - poplayerContainer.offsetWidth,
+                    maxT = document.documentElement.clientHeight - poplayerContainer.offsetHeight;
+
+                document.onmousemove = function (e) {
+                    var oEvent = e || window.event,
+                        disX = oEvent.clientX - disL,
+                        disY = oEvent.clientY - disT;
+
+                    //console.log(disX);
+                    if (disX <= 0) { disX = 0 }
+                    if (disY <= 0) { disY = 0 }
+                    if (disX >= maxL) { disX = maxL }
+                    if (disY >= maxT) { disY = maxT }
+                    poplayerContainer.style.left = disX + 'px';
+                    poplayerContainer.style.top = disY + 'px';
+                }
+
+            }
+            document.onmouseup = function () {
+                document.onmousemove = null;
+            }
+        }
+    </script>
 </body>
 
 </html>

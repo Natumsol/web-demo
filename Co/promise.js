@@ -1,79 +1,82 @@
-var fs = require("fs");
-function promiseify(fn) { // make a regular 
+/**
+ * @description 模拟读取文件
+ */
+var file = {
+    'file1.txt': "file2.txt",
+    'file2.txt': 'Hello, Generator!'
+};
+function _readFile(filename, cb) {
+    setTimeout(function () {
+        cb(null, file[filename]);
+    }, 100)
+}
+function _sleep(ms, cb) {
+    setTimeout(function () {
+        cb(null, "已经睡眠" + ms + "ms, time is up!");
+    }, ms);
+}
+function _readFileSync(filename, cb) {
+    cb(null, file[filename]);
+}
+/**
+* 重写thunkify函数，使其能兼容同步任务
+*/
+function thunkify(fn) {
     return function () {
         var args = [].slice.call(arguments);
-        return new Promise((resolve, reject) => {
-
-            args.push(function (err, data) {
-                if (err) reject(err);
+        var ctx = this;
+        return function (done) {
+            var called;
+            args.push(function () {
+                if (called)
+                    return;
+                called = true;
+                done.apply(null, arguments);
+            })
+            try {
+                fn.apply(ctx, args);
+                // 将任务函数置后运行
+            } catch (ex) {
+                done(ex);
+            }
+        }
+    }
+}
+function toPromise(fn) {
+    return function () {
+        var thunkify_fn = thunkify(fn).apply(this, arguments);
+        return new Promise(function (resolve, reject) {
+            thunkify_fn(function (err, data) {
+                if (err)
+                    reject(err);
                 resolve(data);
             })
-
-            fn.apply(this, args);
-
-        });
+        }
+        )
     }
-
 }
-
-/**
- * 基于Promise的执行器
- */
-
-function runPromise(flow) {
-    var gen = flow();
+function run(generator) {
+    var gen = generator();
     function next(data) {
         var ret = gen.next(data);
-        if (ret.done) return Promise.resolve("done");
-        ret.value.then(data => {
-            next(data)
-        }).catch(err => {
-            gen.throw(err);
-        })
+        if (ret.done)
+            return Promise.resolve("done");
+        return Promise.resolve(ret.value).then(data => next(data)).catch(ex => gen.throw(ex));
     }
-    next();
+    try {
+        return next();
+    } catch (ex) {
+        return Promise.reject(ex);
+    }
 }
-
-
-function _sleep(ms, fn) { // 注意参数的顺序
-    setTimeout(fn, ms);
+var readFile = toPromise(_readFileSync);
+var sleep = toPromise(_sleep);
+function* flow() {
+    var file1 = yield readFile("file1.txt");
+    console.log('file1的内容是: ' + file1);
+    console.log(yield sleep(2000))
+    // sleep 1s
+    var file2 = yield readFile(file1);
+    console.log('file2的内容是: ' + file2);
 }
-
-function mockReadFile(filename, fn) {
-    setTimeout(function () {
-        fn(null, filename);
-    }, 1000);
-}
-
-function _echo(text, fn) {
-    setTimeout(function(){
-        console.log(text);
-        fn(null, text);
-    }, 2000)
-}
-
-
-var sleep = promiseify(_sleep);
-var readFile = promiseify(mockReadFile);
-var echo = promiseify(_echo);
-
-function sync(text) {
-    return Promise.resolve(text);
-}
-
-var flow = function* () {
-    var text = yield sync("西部世界");
-    console.log(text);
-    console.log("sleep 5000ms ...");
-    yield sleep(1000);
-    console.log("wake up ...");
-    console.log("before readfile 1.json")
-    var txt = yield readFile('1.json');
-    console.log(txt);
-    console.log("after readfile 1.json");
-};
-
-runPromise(flow);
-
-
-
+run(flow);
