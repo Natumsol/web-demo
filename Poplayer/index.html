@@ -17,7 +17,6 @@
             user-select: none;
             z-index: 1025;
         }
-        
         .poplayer-container {
             z-index: 1026;
             position: absolute;
@@ -29,19 +28,22 @@
             left: 50%;
             margin-left: -150px;
             top: 40%;
+            border: 1px solid #ddd;
         }
-        
+
         .poplayer-header {
             padding: 5px 10px;
             border-bottom: 1px solid #ddd;
             position: relative;
+            user-select: none;
+            cursor: move;
         }
-        
+
         .poplayer-title,
         .poplayer-close {
             display: inline-block;
         }
-        
+
         .poplayer-close {
             position: absolute;
             right: 0px;
@@ -52,61 +54,55 @@
             cursor: pointer;
             font-size: 18px;
         }
-        
+
         .poplayer-close:hover {
             opacity: 1;
         }
-        
+
         .poplayer-content {
             padding: 5px 10px;
+        }
+
+        .poplayer-footer {
+            padding: 10px 5px 5px;
+        }
+
+        .poplayer-action .btn {
+            float: right;
+            margin-left: 10px;
+        }
+
+        .clearfix::after{
+            content: " ";
+            display: block;
+            width: 0;
+            height: 0;
+            clear: both;
+            visibility: hidden;
         }
     </style>
 </head>
 
 <body>
-    <div class="poplayer-mask"></div>
-    <div class="poplayer-container">
-        <div class="poplayer-header">
-            <div class="poplayer-title">标题</div>
-            <div class="poplayer-close"> × </div>
-        </div>
-        <div class="poplayer-content">
-            hello， world
-        </div>
-        <div class="poplayer-footer"></div>
+    
+    <script src="./index.js"></script>
+    <div id="test">
+        <h1>哈哈哈</h1>
     </div>
-    <!--<script src="./index.js"></script>-->
-
     <script>
         window.onload = function () {
-            var poplayerHeader = document.getElementsByClassName("poplayer-header")[0],
-                poplayerContainer = document.getElementsByClassName("poplayer-container")[0];
-
-            poplayerHeader.onmousedown = function (e) {
-                var oEvent = e || window.event,
-                    disL = oEvent.clientX - poplayerContainer.offsetLeft,
-                    disT = oEvent.clientY - poplayerContainer.offsetTop,
-                    maxL = document.documentElement.clientWidth - poplayerContainer.offsetWidth,
-                    maxT = document.documentElement.clientHeight - poplayerContainer.offsetHeight;
-
-                document.onmousemove = function (e) {
-                    var oEvent = e || window.event,
-                        disX = oEvent.clientX - disL,
-                        disY = oEvent.clientY - disT;
-
-                    //console.log(disX);
-                    if (disX <= 0) { disX = 0 }
-                    if (disY <= 0) { disY = 0 }
-                    if (disX >= maxL) { disX = maxL }
-                    if (disY >= maxT) { disY = maxT }
-                    poplayerContainer.style.left = disX + 'px';
-                    poplayerContainer.style.top = disY + 'px';
-                }
-
-            }
-            document.onmouseup = function () {
-                document.onmousemove = null;
-            }
+            var pop = new Poplayer({
+                content: document.getElementById("test"),
+                isModal: true,
+                title: "哈哈",
+                onConfirm: function(){
+                    alert("确认回掉函数");
+                },
+                onClose: function() {
+                    // alert("确认是否关闭");
+                },
+            });
+            pop.init().show();
         }
     </script>
 </body>
