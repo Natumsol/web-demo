@@ -103,6 +103,21 @@
                 },
             });
             pop.init().show();
+
+             var pop2 = new Poplayer({
+                content: "你咬我呀",
+                isModal: true,
+                title: "哈哈",
+                onConfirm: function(){
+                    alert("确认回掉函数");
+                },
+                onClose: function() {
+                    // alert("确认是否关闭");
+                },
+            });
+            pop2.init().show();
+
+          
         }
     </script>
 </body>
