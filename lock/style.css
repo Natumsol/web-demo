@@ -1,0 +1,32 @@
+body{
+    font-family: Helvetica,sans-serif;
+    font-size: 14px;
+}
+
+.canvas-container{
+    width:300px;
+    height:300px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+#lock {
+    /*background: red;*/
+}
+#message{
+    text-align: center;
+    margin: 15px 0;
+    height: 20px;
+    line-height: 20px;
+}
+
+.select-box {
+    padding: 10px 20px;
+}
+
+.select-box input {
+    vertical-align:-2px;
+}
+.select-box .input-group{
+    margin: 20px 0;
+}

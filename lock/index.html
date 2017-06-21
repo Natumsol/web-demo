@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="style.css">
+    <title>手势解锁</title>
+</head>
+<div class="canvas-container">
+    <canvas id="lock" width="300" height="300"></canvas>
+</div>
+<div id="message"></div>
+<div class="select-box">
+    <div class="input-group">
+        <input type="radio" name="mode" value="0" id="setup" checked>
+        <label for="setup">设置密码</label>
+    </div>
+    <div class="input-group">
+        <input type="radio" name="mode" value="1" id="unlock">
+        <label for="unlock">验证密码</label>
+    </div>
+
+</div>
+
+<body>
+    <script src="index.js"></script>
+</body>
+
+</html>
