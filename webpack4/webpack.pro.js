@@ -26,9 +26,9 @@ module.exports = {
         filename: '[name].js'
     },
     plugins: [
-        // new HtmlWebpackPlugin({
-        //     title: 'Hello, Webpack 4',
-        //     template: './template/index.html'
-        // })
+        new HtmlWebpackPlugin({
+            title: 'Hello, Webpack 4',
+            template: './template/index.html'
+        })
     ]
 };
